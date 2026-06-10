@@ -26,6 +26,12 @@ MALLOC_ARENA_MAX=2 \
 
 # 4. Verify you joined: community must equal the manifest's, peers >= 1.
 simbi-mesh --data-dir ~/.simbi-mesh-staging node status
+
+# 5. (rung 5) Start earning witness candidacy: chain-linked uptime heartbeats
+#    signed by this device's key — no funding needed. Contiguous rounds build
+#    your streak; every node computes your score identically.
+simbi-mesh --data-dir ~/.simbi-mesh-staging uptime beat --count 100 --relay
+simbi-mesh --data-dir ~/.simbi-mesh-staging uptime scores   # your candidacy
 ```
 
 ## What the manifest gives you (trust anchors)
@@ -39,12 +45,12 @@ forever, re-fetch it — the network may have re-seeded.
 
 ## Honest limits (what this is and isn't)
 
-- Your node syncs, verifies, relays, and serves — it does NOT witness:
-  staging's witness committee is genesis-fixed (min_committee_size=3 of 5
-  known keys). Uptime-graduated witness admission is the rung-5 work.
-- Single public bootstrap today (node-0's 14125) — a dial during its restart
-  window fails; retry. More published bootstrap nodes are planned.
-- The binary itself is not yet publicly distributed (private repo) — that
-  release decision is the last gate before the public page can call this rung
-  "Live now". Build: `cargo build --release --bin simbi-mesh` (or the
-  deploy/Dockerfile.staging default-features image).
+- Your node syncs, verifies, relays, serves, and EARNS WITNESS CANDIDACY
+  (`uptime beat` → advisory score) — it does not yet witness: committee
+  admission from the candidate pool is gated on sybil-binding each device key
+  to a scarce Simbi identity (rung-5 S1/S5), so today's score is the honest
+  "graduating" signal, not a vote.
+- Single public bootstrap today (the thin-edge relay's 14125) — a dial during
+  its restart window fails; retry. More published bootstrap nodes are planned.
+- Public binary: github.com/simbi-inc/simbi-mesh-releases (static musl +
+  sha256; reproducible via deploy/build-static-binary.sh).
